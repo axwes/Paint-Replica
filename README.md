@@ -16,7 +16,7 @@ Note: For all of these you may need to replace `python` with `py` or `python3` d
 
 ```bash
 python -m pip install virtualenv
-python -m venv venv
+python py 
 ```
 
 Next, activate your virtual environment (Must be done every time you open the terminal)
