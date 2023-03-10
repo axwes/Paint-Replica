@@ -8,11 +8,8 @@
 
 ## Group Members
 
-- Jackson Goerner (jackson.goerner@monash.edu)
-- Saksham Nagpal (saksham.nagpal@monash.edu)
-- Alexey Ignatiev (alexey.ignatiev@monash.edu)
-- Brendon Taylor (brendon.taylor@monash.edu)
-
+- Tan Yin Cheng (ytan0255@student.monash.edu)
+- 
 ## Setup
 
 Note: For all of these you may need to replace `python` with `py` or `python3` depending on your operating system and python version.
