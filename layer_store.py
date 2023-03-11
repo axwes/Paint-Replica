@@ -45,7 +45,51 @@ class SetLayerStore(LayerStore):
     - special: Invert the colour output.
     """
 
-    pass
+    def __init__(self) -> None:
+        self.layer = None 
+        self.layerStoreChanged = False 
+
+
+    def add(self, layer: Layer) -> bool:
+        """
+        Add a layer to the store.
+        Returns true if the LayerStore was actually changed.
+        """
+        if layer != self.layer:
+            self.layer = layer
+            self.layerStoreChanged = True 
+
+        return self.layerStoreChanged
+    
+    def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
+        """
+        Returns the colour this square should show, given the current layers.
+        """
+        self.layer.apply
+
+    def erase(self, layer: Layer) -> bool:
+        """
+        Complete the erase action with this layer
+        Returns true if the LayerStore was actually changed.
+        """
+        if self.layer != None:
+            self.layer = None 
+            self.layerStoreChanged = True 
+
+        return self.layerStoreChanged
+
+    def special(self):
+        """
+        Special mode. Different for each store implementation.
+        """
+        invertedLayer = ()
+
+        for color in self.layer:
+            invertedLayer.append(255 - color)
+
+        return invertedLayer        
+
+        
 
 class AdditiveLayerStore(LayerStore):
     """
