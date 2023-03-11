@@ -49,7 +49,7 @@ class SetLayerStore(LayerStore):
         self.layer = None 
         self.layerStoreChanged = False 
 
-    @abstractmethod
+
     def add(self, layer: Layer) -> bool:
         """
         Add a layer to the store.
@@ -60,29 +60,34 @@ class SetLayerStore(LayerStore):
             self.layerStoreChanged = True 
 
         return self.layerStoreChanged
-
-    @abstractmethod
+    
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         """
-        
+        self.layer.apply
 
-    @abstractmethod
     def erase(self, layer: Layer) -> bool:
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
         """
-        pass
+        if self.layer != None:
+            self.layer = None 
+            self.layerStoreChanged = True 
 
-    @abstractmethod
+        return self.layerStoreChanged
+
     def special(self):
         """
         Special mode. Different for each store implementation.
         """
-        pass
-        
+        invertedLayer = ()
+
+        for color in self.layer:
+            invertedLayer.append(255 - color)
+
+        return invertedLayer        
 
         
 
