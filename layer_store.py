@@ -46,8 +46,8 @@ class SetLayerStore(LayerStore):
     """
 
     def __init__(self) -> None:
-        self.layer = None 
-        self.layerStoreChanged = False 
+        self.layer = None
+        self.invert = False
 
 
     def add(self, layer: Layer) -> bool:
@@ -57,37 +57,42 @@ class SetLayerStore(LayerStore):
         """
         if layer != self.layer:
             self.layer = layer
-            self.layerStoreChanged = True 
+            return True
 
-        return self.layerStoreChanged
+        return False
     
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         """
-        self.layer.apply
 
+        #check if there's layer, if no layer then just return the start color 
+        if self.layer is None:
+            return start
+        
+        #if there's layer, apply the layer to the start color and store it in color 
+        color = self.layer.apply(start, timestamp, x, y) # self.layer.apply will return a tuple of 3 int after applying the layer to the start color 
+
+        #because we can't iterate through Layer, we can use the tuple returned in self.layer.apply to invert the color in this function
+        if self.invert == True:
+            color = tuple(255 - c for c in color)
+        return color
+        
+        
     def erase(self, layer: Layer) -> bool:
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
         """
-        if self.layer != None:
-            self.layer = None 
-            self.layerStoreChanged = True 
+        self.layer = None
 
-        return self.layerStoreChanged
 
     def special(self):
         """
         Special mode. Different for each store implementation.
         """
-        invertedLayer = ()
-
-        for color in self.layer:
-            invertedLayer.append(255 - color)
-
-        return invertedLayer        
+        self.invert = not self.invert
+        
 
         
 
