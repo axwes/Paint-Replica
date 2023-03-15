@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 class Grid:
     DRAW_STYLE_SET = "SET"
     DRAW_STYLE_ADD = "ADD"
@@ -40,6 +41,14 @@ class Grid:
 
         
 
+        
+    def __getitem__(self, index: Tuple[int, int]) -> LayerStore:
+        """
+        Enable accessing the LayerStore objects for each grid square using the syntax grid[x][y].
+        """
+        x, y = index
+        return self.grid[x][y]
+    
 
     def increase_brush_size(self):
         """
