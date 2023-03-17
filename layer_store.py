@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from layer_util import Layer
-from data_structures.stack_adt import ArrayStack
+from data_structures.queue_adt import CircularQueue
 
 class LayerStore(ABC):
 
@@ -105,7 +105,7 @@ class AdditiveLayerStore(LayerStore):
     - special: Reverse the order of current layers (first becomes last, etc.)
     """
     def __init__(self):
-        self.layers = ArrayStack(100)
+        self.layers = CircularQueue(100)
         self.reverse_order = False
 
     def add(self, layer: Layer) -> bool:
@@ -113,56 +113,38 @@ class AdditiveLayerStore(LayerStore):
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
         """
-
         if self.layers.is_full():
             return False
-        self.layers.push(layer)
+        self.layers.append(layer)
         return True
 
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         """
-        if self.reverse_order == False:
-            temp_layers1 = self.layers
 
-            temp_layers2 = ArrayStack(len(self.layers))
-            while not self.layers.is_empty():
-                temp_layers2.push(self.layers.pop())
-            self.layers = temp_layers1 
-        if self.reverse_order == True:
-            temp_layers2 = ArrayStack(len(self.layers))
-            while not self.layers.is_empty():
-                temp_layers2.push(self.layers.pop())
-            self.reverse_order = True
-            self.layers = temp_layers2
+        index = self.layers.front
+
+        for _ in range(len(self.layers)):
+            item = self.layers.array[index]
+            color = item.apply(start, timestamp, x, y)
+
+        return color 
+
+            
         
-        r, g, b = 0, 0, 0
-
-        if len(temp_layers2) == 1:
-            r,g,b = temp_layers2.pop().apply(start, timestamp, x, y)
-        else:
-            while not temp_layers2.is_empty():
-                r1, g1, b1 = temp_layers2.pop().apply(start, timestamp, x, y)
-                r += r1
-                g += g1
-                b += b1
-                start = (r1, g1, b1)
-
-        return (r, g, b)
 
     def erase(self, layer: Layer) -> bool:
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
         """
-        self.reverse_order = True
 
-        if self.layers.peek == layer:
-            self.layers.pop()
-            return True
+        if not self.layers.is_empty():
+            self.layers.front += 1
+            return True 
         return False
-    
+
     def special(self):
         """
         Special mode. Different for each store implementation.
