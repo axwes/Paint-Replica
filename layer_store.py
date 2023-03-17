@@ -2,6 +2,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from layer_util import Layer
 from data_structures.queue_adt import CircularQueue
+from data_structures.stack_adt import ArrayStack
 
 class LayerStore(ABC):
 
@@ -106,7 +107,7 @@ class AdditiveLayerStore(LayerStore):
     """
     def __init__(self):
         self.layers = CircularQueue(100)
-        self.reverse_order = False
+        
 
     def add(self, layer: Layer) -> bool:
         """
@@ -122,14 +123,21 @@ class AdditiveLayerStore(LayerStore):
         """
         Returns the colour this square should show, given the current layers.
         """
-
-        index = self.layers.front
+        if self.layers.is_empty():
+            return start
+            
+        self.layers2 = CircularQueue(100)
 
         for _ in range(len(self.layers)):
-            item = self.layers.array[index]
-            color = item.apply(start, timestamp, x, y)
+            item = self.layers.serve()
+            colors = item.apply(start , timestamp, x, y)
+            start = colors
+            self.layers2.append(item)
 
-        return color 
+        self.layers = self.layers2
+
+            
+        return colors
 
             
         
@@ -141,15 +149,28 @@ class AdditiveLayerStore(LayerStore):
         """
 
         if not self.layers.is_empty():
-            self.layers.front += 1
+            self.layers.serve()
             return True 
-        return False
+        else:
+            return False
 
     def special(self):
         """
         Special mode. Different for each store implementation.
         """
-        self.reverse_order = not self.reverse_order
+        stack = ArrayStack(len(self.layers))
+        reversed_layers = CircularQueue(len(self.layers))
+
+        for i in range (len(self.layers)):
+            item = self.layers.serve()
+            stack.push(item)
+            self.layers.append(item)
+
+        while not stack.is_empty():
+            reversed_layers.append(stack.pop())
+
+        self.layers = reversed_layers
+        
 
 
 
@@ -163,4 +184,4 @@ class SequenceLayerStore(LayerStore):
         In the event of two layers being the median names, pick the lexicographically smaller one.
     """
 
-    pass
+    
