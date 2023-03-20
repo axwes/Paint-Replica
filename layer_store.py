@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from layer_util import Layer
 from data_structures.queue_adt import CircularQueue
 from data_structures.stack_adt import ArrayStack
+from data_structures.array_sorted_list import ArraySortedList
+from data_structures.sorted_list_adt import ListItem
 
 class LayerStore(ABC):
 
@@ -183,5 +185,57 @@ class SequenceLayerStore(LayerStore):
         Of all currently applied layers, remove the one with median `name`.
         In the event of two layers being the median names, pick the lexicographically smaller one.
     """
+    def __init__(self) -> None:
+        self.layers = ArraySortedList(20)
+
+    def add(self, layer: Layer) -> bool:
+        """
+        Add a layer to the store.
+        Returns true if the LayerStore was actually changed.
+        """
+        self.layers.add(ListItem(layer, layer.index))
+
+
+    def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
+        """
+        Returns the colour this square should show, given the current layers.
+        """
+
+        if self.layers.is_empty():
+            return start
+        
+        self.layerstemp = ArraySortedList(20)
+        
+        for i in range(len(self.layers)):
+            item = self.layers[i].value 
+            color = item.apply(start, timestamp, x, y)
+            start = color
+            self.layerstemp.add(self.layers[i])
+
+        self.layers = self.layerstemp
+
+        return color
+    
+
+    def erase(self, layer: Layer) -> bool:
+        """
+        Complete the erase action with this layer
+        Returns true if the LayerStore was actually changed.
+        """
+
+        for i in range(len(self.layers)):
+            if self.layers[i].value == layer:
+                self.layers.remove(self.layers[i])
+
+ 
+
+    def special(self):
+        """
+        Special mode. Different for each store implementation.
+        """
+        return (0,0,0)
+
+
+
 
     
