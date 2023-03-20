@@ -88,7 +88,10 @@ class SetLayerStore(LayerStore):
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
         """
-        self.layer = None
+        if self.layer != None:
+            self.layer = None
+            return True
+        return False
 
 
     def special(self):
@@ -195,6 +198,10 @@ class SequenceLayerStore(LayerStore):
         Returns true if the LayerStore was actually changed.
         """
         self.layers.add(ListItem(layer, layer.index))
+
+        if self.layers.__contains__(ListItem(layer, layer.index)):
+            return True
+        
         self.templayers.add(ListItem(layer, layer.name))
 
 
@@ -230,6 +237,8 @@ class SequenceLayerStore(LayerStore):
             if self.layers[i].value == layer:
                 self.layers.remove(self.layers[i])
 
+        if not self.layers.__contains__(ListItem(layer, layer.index)):
+            return True
  
 
     def special(self):
