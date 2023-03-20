@@ -121,8 +121,9 @@ class AdditiveLayerStore(LayerStore):
         """
         if self.layers.is_full():
             return False
-        self.layers.append(layer)
-        return True
+        else:
+            self.layers.append(layer)
+            return True
 
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
