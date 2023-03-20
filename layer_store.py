@@ -187,6 +187,7 @@ class SequenceLayerStore(LayerStore):
     """
     def __init__(self) -> None:
         self.layers = ArraySortedList(20)
+        self.templayers = ArraySortedList(20)
 
     def add(self, layer: Layer) -> bool:
         """
@@ -194,6 +195,7 @@ class SequenceLayerStore(LayerStore):
         Returns true if the LayerStore was actually changed.
         """
         self.layers.add(ListItem(layer, layer.index))
+        self.templayers.add(ListItem(layer, layer.name))
 
 
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
@@ -203,6 +205,7 @@ class SequenceLayerStore(LayerStore):
 
         if self.layers.is_empty():
             return start
+
         
         self.layerstemp = ArraySortedList(20)
         
@@ -233,7 +236,26 @@ class SequenceLayerStore(LayerStore):
         """
         Special mode. Different for each store implementation.
         """
-        return (0,0,0)
+
+        l = len(self.templayers)
+
+        if l % 2 == 1:
+            mid = l // 2
+        else:
+            mid = l // 2 - 1
+
+        self.templayers.remove(self.templayers[mid])
+
+        newtemp = ArraySortedList(20)
+
+        for i in range(len(self.templayers)):
+            value = self.templayers[i].value 
+            key = value.index 
+            newtemp.add(ListItem(value, key))
+
+        self.layers = newtemp
+
+        
 
 
 
