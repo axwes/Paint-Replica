@@ -1,4 +1,6 @@
 from __future__ import annotations
+from layer_store import *
+from data_structures.referential_array import ArrayR
 
 class Grid:
     DRAW_STYLE_SET = "SET"
@@ -30,9 +32,22 @@ class Grid:
         self.x = x 
         self.y = y
 
+        self.grid = ArrayR(x) #row
+        for i in range(x):
+            self.grid[i] = ArrayR(y) #column 
+
+        self.draw_style = draw_style 
+
         #initialising draw style
         if draw_style in self.DRAW_STYLE_OPTIONS:
-            self.draw_style = draw_style
+            for row in range(self.x):
+                for column in range(self.y):
+                    if self.draw_style == self.DRAW_STYLE_SET:
+                        self.grid[row][column] = SetLayerStore()
+                    elif self.draw_style == self.DRAW_STYLE_ADD:
+                        self.grid[row][column] = AdditiveLayerStore()
+                    elif self.draw_style == self.DRAW_STYLE_SEQUENCE:
+                        self.grid[row][column] = SequenceLayerStore()
         else:
             raise ValueError("Please input options from the draw style options!")
 
@@ -41,14 +56,17 @@ class Grid:
 
         
 
+    def __getitem__(self, index):
+        return self.grid[index]
+
         
-    def __getitem__(self, index: Tuple[int, int]) -> LayerStore:
+    def __setitem__(self, index: tuple[int, int], value: LayerStore) -> None:
+        """ Sets the LayerStore at the given (x, y) index to the provided value.
+        :complexity: O(1)
+        :pre: 0 <= x < self.x and 0 <= y < self.y
         """
-        Enable accessing the LayerStore objects for each grid square using the syntax grid[x][y].
-        """
-        x, y = index
-        return self.grid[x][y]
-    
+        self.grid[index] = value
+        
 
     def increase_brush_size(self):
         """
@@ -73,4 +91,6 @@ class Grid:
         """
         Activate the special affect on all grid squares.
         """
-        raise NotImplementedError()
+        for i in range(self.x):
+            for j in range(self.y):
+                self.grid[i][j].special()

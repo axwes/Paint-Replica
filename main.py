@@ -302,7 +302,11 @@ class MyWindow(arcade.Window):
         px: x position of the brush.
         py: y position of the brush.
         """
-        pass
+        brushSize = self.grid.brush_size
+        for x in range(max(0, px - brushSize), min(self.grid.x, px + brushSize + 1)):
+            for y in range(max(0, py - brushSize), min(self.grid.y, py + brushSize + 1)):
+                if abs(x - px) + abs(y - py) <= brushSize:
+                    self.grid[x][y].add(layer)
 
     def on_undo(self):
         """Called when an undo is requested."""
@@ -314,7 +318,7 @@ class MyWindow(arcade.Window):
 
     def on_special(self):
         """Called when the special action is requested."""
-        pass
+        self.grid.special()
 
     def on_replay_start(self):
         """Called when the replay starting is requested."""
