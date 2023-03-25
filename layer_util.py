@@ -20,6 +20,9 @@ class Layer:
     bg: tuple[int, int, int] | None = None
 
     def __post_init__(self):
+        """
+        :complexity: O(1)
+        """
         if hasattr(self.apply, "__bg__"):
             self.bg = self.apply.__bg__
         self.name = self.apply.__name__
@@ -30,6 +33,7 @@ class background(object):
     Usage:  @register
             @background(200, 0, 120)
             def my_special_layer(...):
+    :complexity: O(1)
     """
     def __init__(self, r, g, b):
         self.val = (r, g, b)
@@ -52,6 +56,7 @@ def register(func):
 
     In order to actually confirm this registration,
     you'll need to import the file containing the layer definition
+    :complexity: O(1)
     """
     global cur_layer_index
     LAYERS[cur_layer_index] = Layer(cur_layer_index, func)
@@ -59,5 +64,8 @@ def register(func):
     return LAYERS[cur_layer_index-1]
 
 def get_layers():
+    """
+    :complexity: O(1)
+    """
     import layers # Force all registrations to occur.
     return LAYERS

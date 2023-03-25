@@ -1,11 +1,11 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from layer_util import Layer
+from layer_util import Layer, get_layers
 from data_structures.queue_adt import CircularQueue
 from data_structures.stack_adt import ArrayStack
 from data_structures.array_sorted_list import ArraySortedList
 from data_structures.sorted_list_adt import ListItem
-
+from data_structures.bset import BSet
 class LayerStore(ABC):
 
     def __init__(self) -> None:
@@ -50,24 +50,29 @@ class SetLayerStore(LayerStore):
     """
 
     def __init__(self) -> None:
-        self.layer = None
-        self.invert = False
+        '''
+        Time complexity: O(1)
+        '''
+        self.layer = None  # Initialize layer variable with None
+        self.invert = False # Initialize invert variable with False
 
 
     def add(self, layer: Layer) -> bool:
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
+        Time complexity: O(1)
         """
         if layer != self.layer:
-            self.layer = layer
+            self.layer = layer # Set the layer 
             return True
 
-        return False
+        return False 
     
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
+        Time complexity: O(1)
         """
 
         #check if there's layer, if no layer then just return the start color 
@@ -87,16 +92,18 @@ class SetLayerStore(LayerStore):
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
+        Time complexity: O(1)
         """
         if self.layer != None:
-            self.layer = None
+            self.layer = None # Set the layer to None
             return True
-        return False
+        return False 
 
 
     def special(self):
         """
         Special mode. Different for each store implementation.
+        Time complexity: O(1)
         """
         self.invert = not self.invert
         
@@ -111,13 +118,18 @@ class AdditiveLayerStore(LayerStore):
     - special: Reverse the order of current layers (first becomes last, etc.)
     """
     def __init__(self):
-        self.layers = CircularQueue(100)
+        """
+        Time complexity: O(1) [because the circular queue is initalised with 20 so its no longer O(n)]
+        """
+        self.layers = CircularQueue(20)
+        self.layers2 = CircularQueue(20)
         
 
     def add(self, layer: Layer) -> bool:
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
+        Time complexity: O(1)
         """
         if self.layers.is_full():
             return False
@@ -128,11 +140,10 @@ class AdditiveLayerStore(LayerStore):
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
+        Time complexity: O(n) where n is the number of layers in the store 
         """
         if self.layers.is_empty():
             return start
-            
-        self.layers2 = CircularQueue(100)
 
         for _ in range(len(self.layers)):
             item = self.layers.serve()
@@ -145,13 +156,13 @@ class AdditiveLayerStore(LayerStore):
             
         return colors
 
-            
-        
 
     def erase(self, layer: Layer) -> bool:
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
+        Erasing from an Additive Layer always removes the oldest remaining layer
+        Time complexity: O(1)
         """
 
         if not self.layers.is_empty():
@@ -163,22 +174,21 @@ class AdditiveLayerStore(LayerStore):
     def special(self):
         """
         Special mode. Different for each store implementation.
+        Reverses the "ages" of each layer, so the oldest layer is now the youngest layer, and so on.
+        Time complexity: O(n) where n is the number of layers in the store
         """
         stack = ArrayStack(len(self.layers))
-        reversed_layers = CircularQueue(len(self.layers))
+        reversed_queue = CircularQueue(len(self.layers))
 
-        for i in range (len(self.layers)):
-            item = self.layers.serve()
-            stack.push(item)
-            self.layers.append(item)
+        while not self.layers.is_empty():
+            layer = self.layers.serve()
+            stack.push(layer)
 
         while not stack.is_empty():
-            reversed_layers.append(stack.pop())
+            reversed_queue.append(stack.pop())
 
-        self.layers = reversed_layers
+        self.layers = reversed_queue
         
-
-
 
 class SequenceLayerStore(LayerStore):
     """
@@ -190,40 +200,44 @@ class SequenceLayerStore(LayerStore):
         In the event of two layers being the median names, pick the lexicographically smaller one.
     """
     def __init__(self) -> None:
-        self.layers = ArraySortedList(20)
-        self.templayers = ArraySortedList(20)
+        '''
+        Initializes the SequenceLayerStore with a BSet object and an ArraySortedList object.
+        Time complexity: O(1)
+        '''
+        self.layers = BSet(1)
+        self.layers_array = ArraySortedList(20)
 
     def add(self, layer: Layer) -> bool:
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
+        Time complexity:
+            - Best-case: O(1), if the layer is already in the store.
+            - Worst-case: O(n), if the layer is not in the store and need to be added in.
         """
-        self.layers.add(ListItem(layer, layer.index))
-
-        if self.layers.__contains__(ListItem(layer, layer.index)):
+        if not self.layers.__contains__(layer.index + 1):
+            self.layers.add(layer.index + 1)
+            self.layers_array.add(ListItem(layer, layer.name))
             return True
-        
-        self.templayers.add(ListItem(layer, layer.name))
-
+        return False
 
     def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
+        Time complexity: O(n), where n is the number of layers in the store.
         """
 
         if self.layers.is_empty():
-            return start
+            color = start 
+
+        registered_layers = get_layers()
 
         
-        self.layerstemp = ArraySortedList(20)
-        
-        for i in range(len(self.layers)):
-            item = self.layers[i].value 
-            color = item.apply(start, timestamp, x, y)
-            start = color
-            self.layerstemp.add(self.layers[i])
-
-        self.layers = self.layerstemp
+        for i in range(1, len(registered_layers)):
+            if i in self.layers:
+                layers = registered_layers.__getitem__(i - 1)
+                color = layers.apply(start, timestamp, x, y)
+                start = color
 
         return color
     
@@ -232,38 +246,40 @@ class SequenceLayerStore(LayerStore):
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
+         Time complexity:
+            - Best-case: O(1), if the layer is not in the store.
+            - Worst-case: O(n), if the layer is in the store and needs to be removed.
         """
 
-        for i in range(len(self.layers)):
-            if self.layers[i].value == layer:
-                self.layers.remove(self.layers[i])
-
-        if not self.layers.__contains__(ListItem(layer, layer.index)):
+        if self.layers.__contains__(layer.index + 1):
+            self.layers.remove(layer.index + 1)
+            self.layers_array.remove(ListItem(layer, layer.name))
             return True
+        return False
  
 
     def special(self):
         """
         Special mode. Different for each store implementation.
+        Removes the median layer from the store based on alphabetical order.
+        If there are two median layers, remove the lexicographically smaller one.
+        Time complexity: O(n), where n is the number of layers in the store.
         """
+        length = len(self.layers_array)
 
-        l = len(self.templayers)
-
-        if l % 2 == 1:
-            mid = l // 2
+        if length % 2 == 1:
+            mid = length // 2
         else:
-            mid = l // 2 - 1
+            mid = length // 2 - 1
 
-        self.templayers.remove(self.templayers[mid])
+        self.layers_array.remove(self.layers_array[mid])
 
-        newtemp = ArraySortedList(20)
+        temp_bset = BSet(1)
 
-        for i in range(len(self.templayers)):
-            value = self.templayers[i].value 
-            key = value.index 
-            newtemp.add(ListItem(value, key))
+        for i in range(len(self.layers_array)):
+            temp_bset.add(self.layers_array[i].value.index  + 1)
 
-        self.layers = newtemp
+        self.layers = temp_bset 
 
         
 

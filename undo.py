@@ -1,8 +1,12 @@
 from __future__ import annotations
 from action import PaintAction
 from grid import Grid
+from data_structures.stack_adt import ArrayStack
 
 class UndoTracker:
+
+    undo_array = ArrayStack(100000)
+    redo_array = ArrayStack(100000)
 
     def add_action(self, action: PaintAction) -> None:
         """
@@ -10,8 +14,10 @@ class UndoTracker:
 
         If your collection is already full,
         feel free to exit early and not add the action.
+        
+        Time complexity: O(1)
         """
-        raise NotImplementedError()
+        self.undo_array.push(action)
 
     def undo(self, grid: Grid) -> PaintAction|None:
         """
@@ -19,8 +25,18 @@ class UndoTracker:
         If there are no actions to undo, simply do nothing.
 
         :return: The action that was undone, or None.
+
+        Time complexity: 
+            Best case: O(1) - if the undo_array is empty
+            Worst case: O(n) -  where n is the number of steps in the PaintAction.steps list
         """
-        raise NotImplementedError()
+        if self.undo_array.is_empty():
+            return None 
+        undoItem = self.undo_array.pop()
+        undoItem.undo_apply(grid)
+        self.redo_array.push(undoItem)
+
+        return undoItem
 
     def redo(self, grid: Grid) -> PaintAction|None:
         """
@@ -28,5 +44,15 @@ class UndoTracker:
         If there are no actions to redo, simply do nothing.
 
         :return: The action that was redone, or None.
+
+        Time complexity:
+            Best case: O(1) - if the redo_array is empty
+            Worst case: O(n) - where n is the number of steps in the PaintAction.steps list
         """
-        raise NotImplementedError()
+        if self.redo_array.is_empty():
+            return None 
+        
+        redoItem = self.redo_array.pop()
+        redoItem.redo_apply(grid)
+        
+        return redoItem

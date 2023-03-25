@@ -93,4 +93,3 @@ class TestGrid(unittest.TestCase):
                     sq2.get_color((0, 0, 0), 0, x, y),
                     "Grid not the same after apply has been made."
                 )
-
