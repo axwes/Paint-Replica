@@ -335,6 +335,7 @@ class MyWindow(arcade.Window):
         self.undo_tracker.add_action(special_action)
         self.replay_tracker.add_action(special_action)
 
+
     def on_replay_start(self):
         """Called when the replay starting is requested."""
         self.replay_tracker.start_replay()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from layers import black
 from layer_util import Layer, get_layers
 from data_structures.queue_adt import CircularQueue
 from data_structures.stack_adt import ArrayStack
@@ -85,6 +86,7 @@ class SetLayerStore(LayerStore):
         #because we can't iterate through Layer, we can use the tuple returned in self.layer.apply to invert the color in this function
         if self.invert == True:
             color = tuple(255 - c for c in color)
+
         return color
         
         
@@ -231,11 +233,10 @@ class SequenceLayerStore(LayerStore):
             color = start 
 
         registered_layers = get_layers()
-
         
         for i in range(1, len(registered_layers)):
             if i in self.layers:
-                layers = registered_layers.__getitem__(i - 1)
+                layers = registered_layers[i-1]
                 color = layers.apply(start, timestamp, x, y)
                 start = color
 
