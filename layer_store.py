@@ -280,10 +280,9 @@ class SequenceLayerStore(LayerStore):
         else:
             mid = length // 2 - 1
 
-        median_item = array_list[mid]
-        layer_to_remove = median_item.value
+        median_item = array_list[mid].value
 
-        self.erase(layer_to_remove)
+        self.erase(median_item)
 
         
 
