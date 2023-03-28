@@ -100,9 +100,7 @@ class Grid:
         """
         for row in range(self.x):
             for column in range(self.y):
-                try:
-                    self.grid[row][column].special()
-                except:
-                    pass
+                self.grid[row][column].special()
+              
 
     

@@ -207,7 +207,7 @@ class SequenceLayerStore(LayerStore):
         Time complexity: O(1)
         '''
         self.layers = BSet(1)
-        self.layers_array = ArraySortedList(20)
+        self.registered_layers = get_layers()
 
     def add(self, layer: Layer) -> bool:
         """
@@ -219,7 +219,6 @@ class SequenceLayerStore(LayerStore):
         """
         if not self.layers.__contains__(layer.index + 1):
             self.layers.add(layer.index + 1)
-            self.layers_array.add(ListItem(layer, layer.name))
             return True
         return False
 
@@ -231,12 +230,10 @@ class SequenceLayerStore(LayerStore):
 
         if self.layers.is_empty():
             color = start 
-
-        registered_layers = get_layers()
         
-        for i in range(1, len(registered_layers)):
+        for i in range(1, len(self.registered_layers)):
             if i in self.layers:
-                layers = registered_layers[i-1]
+                layers = self.registered_layers[i-1]
                 color = layers.apply(start, timestamp, x, y)
                 start = color
 
@@ -254,7 +251,6 @@ class SequenceLayerStore(LayerStore):
 
         if self.layers.__contains__(layer.index + 1):
             self.layers.remove(layer.index + 1)
-            self.layers_array.remove(ListItem(layer, layer.name))
             return True
         return False
  
@@ -266,21 +262,30 @@ class SequenceLayerStore(LayerStore):
         If there are two median layers, remove the lexicographically smaller one.
         Time complexity: O(n), where n is the number of layers in the store.
         """
-        length = len(self.layers_array)
 
+        array_list = ArraySortedList(len(self.registered_layers))
+
+        for i in range(1, len(self.registered_layers)):
+            if i in self.layers:
+                layers = self.registered_layers[i-1]
+                array_list.add(ListItem(layers, layers.name))
+
+        length = len(array_list)
+
+        if length == 0:
+            return
+    
         if length % 2 == 1:
             mid = length // 2
         else:
             mid = length // 2 - 1
 
-        self.layers_array.remove(self.layers_array[mid])
+        median_item = array_list[mid]
+        layer_to_remove = median_item.value
 
-        temp_bset = BSet(1)
+        self.erase(layer_to_remove)
 
-        for i in range(len(self.layers_array)):
-            temp_bset.add(self.layers_array[i].value.index  + 1)
-
-        self.layers = temp_bset 
+        
 
         
 
