@@ -281,7 +281,7 @@ class SequenceLayerStore(LayerStore):
 
         self.erase(median_item)
 
-    def find_mid(self, array):
+    def find_mid(self, array: ArraySortedList[ListItem]) -> ListItem:
         """
         Finds the middle element of an array.
         If the array has an odd number of elements, returns the middle element.
