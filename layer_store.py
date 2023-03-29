@@ -78,6 +78,8 @@ class SetLayerStore(LayerStore):
 
         #check if there's layer, if no layer then just return the start color 
         if self.layer is None:
+            if self.invert:
+                return (0,0,0)
             return start
         
         #if there's layer, apply the layer to the start color and store it in color 
@@ -253,7 +255,7 @@ class SequenceLayerStore(LayerStore):
             self.layers.remove(layer.index + 1)
             return True
         return False
- 
+    
 
     def special(self):
         """
@@ -274,16 +276,25 @@ class SequenceLayerStore(LayerStore):
 
         if length == 0:
             return
-    
+
+        median_item = self.find_mid(array_list).value
+
+        self.erase(median_item)
+
+    def find_mid(self, array):
+        """
+        Finds the middle element of an array.
+        If the array has an odd number of elements, returns the middle element.
+        If the array has an even number of elements, returns the element to the left of the middle.
+        Time complexity: O(1)
+        """
+        length = len(array)
         if length % 2 == 1:
             mid = length // 2
         else:
             mid = length // 2 - 1
-
-        median_item = array_list[mid].value
-
-        self.erase(median_item)
-
+            
+        return array[mid]
         
 
         
