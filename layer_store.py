@@ -70,7 +70,7 @@ class SetLayerStore(LayerStore):
 
         return False 
     
-    def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
+    def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         Time complexity: O(1)
@@ -104,7 +104,7 @@ class SetLayerStore(LayerStore):
         return False 
 
 
-    def special(self):
+    def special(self)-> None:
         """
         Special mode. Different for each store implementation.
         Time complexity: O(1)
@@ -141,7 +141,7 @@ class AdditiveLayerStore(LayerStore):
             self.layers.append(layer)
             return True
 
-    def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
+    def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         Time complexity: O(n) where n is the number of layers in the store 
@@ -175,7 +175,7 @@ class AdditiveLayerStore(LayerStore):
         else:
             return False
 
-    def special(self):
+    def special(self)-> None:
         """
         Special mode. Different for each store implementation.
         Reverses the "ages" of each layer, so the oldest layer is now the youngest layer, and so on.
@@ -224,7 +224,7 @@ class SequenceLayerStore(LayerStore):
             return True
         return False
 
-    def get_color(self, start, timestamp, x, y) -> tuple[int, int, int]:
+    def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
         Time complexity: O(n), where n is the number of layers in the store.
@@ -257,7 +257,7 @@ class SequenceLayerStore(LayerStore):
         return False
     
 
-    def special(self):
+    def special(self)-> None:
         """
         Special mode. Different for each store implementation.
         Removes the median layer from the store based on alphabetical order.
