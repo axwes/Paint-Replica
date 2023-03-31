@@ -26,7 +26,10 @@ class Grid:
         - x, y: The dimensions of the grid.
 
         Should also intialise the brush size to the DEFAULT provided as a class variable.
-        Time complexity: O(x * y), as we need to initialize a LayerStore for each grid cell.
+
+        Time complexity: 
+            Best case: O(x * y), as we need to initialize a LayerStore for each grid cell.
+            Worse case: O(x * y), as we need to initialize a LayerStore for each grid cell.
         """
 
         #initialising dimension of the grid
@@ -58,16 +61,32 @@ class Grid:
     def __getitem__(self, index):
         """
         Get the LayerStore at the specified index.
-        Time complexity: O(1)
+
+         Args:
+            index (int): The index of the LayerStore to retrieve.
+
+        Returns:
+            LayerStore: The LayerStore at the given index.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         return self.grid[index]
 
         
     def __setitem__(self, index: tuple[int, int], value: LayerStore) -> None:
         """ Sets the LayerStore at the given (x, y) index to the provided value.
-        :complexity: O(1)
+
+        Args:
+            index (tuple[int, int]): The (x, y) index at which to set the LayerStore.
+            value (LayerStore): The LayerStore value to set at the index.
+ 
         :pre: 0 <= x < self.x and 0 <= y < self.y
-        Time complexity: O(1)
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         self.grid[index] = value
         
@@ -77,7 +96,10 @@ class Grid:
         Increases the size of the brush by 1,
         if the brush size is already MAX_BRUSH,
         then do nothing.
-        Time complexity: O(1)
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
 
         if self.brush_size != self.MAX_BRUSH:
@@ -88,7 +110,10 @@ class Grid:
         Decreases the size of the brush by 1,
         if the brush size is already MIN_BRUSH,
         then do nothing.
-        Time complexity: O(1)
+        
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         if self.brush_size != self.MIN_BRUSH:
             self.brush_size -= 1
@@ -96,7 +121,10 @@ class Grid:
     def special(self):
         """
         Activate the special affect on all grid squares.
-        Time complexity: O(x * y), as the special effect is applied to each grid cell
+
+        Time complexity: 
+            Best case: O(x * y), as the special effect is applied to each grid cell
+            Worse case: O(x * y), as the special effect is applied to each grid cell
         """
         for row in range(self.x):
             for column in range(self.y):

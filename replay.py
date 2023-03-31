@@ -17,7 +17,9 @@ class ReplayTracker:
 
         Useful if you have any setup to do before `play_next_action` should be called.
 
-        Time complexity: O(1)
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         self.replaying = True 
 
@@ -27,7 +29,15 @@ class ReplayTracker:
 
         `is_undo` specifies whether the action was an undo action or not.
         Special, Redo, and Draw all have this is False.
-        Time complexity: O(1)
+
+        Args:
+            action (PaintAction): The paint action to store for replaying.
+            is_undo (bool, optional): Indicates if the action is an undo action or not.
+                                      For Special, Redo, and Draw actions, this is False. Defaults to False.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         self.action_queue.append((action, is_undo))
 
@@ -35,13 +45,17 @@ class ReplayTracker:
     def play_next_action(self, grid: Grid) -> bool:
         """
         Plays the next replay action on the grid.
+
+        Args:
+            grid (Grid): The grid where the replay action will be performed.
+
         Returns a boolean.
             - If there were no more actions to play, and so nothing happened, return True.
             - Otherwise, return False.
 
         Time complexity: 
-            Best case: O(1) - constant time complexity if not in replaying mode or if the replay is finished
-            Worst case: O(n) - linear time complexity, where n is the number of steps in the PaintAction.steps list
+            Best case: O(1) - if not in replaying mode or if the replay is finished
+            Worst case: O(n) - where n is the number of steps in the PaintAction.steps list
         """
         if self.replaying:
             if self.replay_queue.is_empty() and self.action_queue.is_empty():

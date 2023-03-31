@@ -289,14 +289,28 @@ class MyWindow(arcade.Window):
     # STUDENT PART
 
     def on_init(self):
-        """Initialisation that occurs after the system initialisation."""
+        """
+        Initialisation that occurs after the system initialisation.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
+        """
         self.undo_tracker = UndoTracker()
         self.replay_tracker = ReplayTracker()
 
-    def on_reset(self):
-        """Called when a window reset is requested."""
+    def on_reset(self) -> None:
+        """Called when a window reset is requested.
 
-    def on_paint(self, layer: Layer, px, py):
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
+        """
+        self.undo_tracker = UndoTracker()
+        self.replay_tracker = ReplayTracker()
+        
+
+    def on_paint(self, layer: Layer, px, py) -> None :
         """
         Called when a grid square is clicked on, which should trigger painting in the vicinity.
         Vicinity squares outside of the range [0, GRID_SIZE_X) or [0, GRID_SIZE_Y) can be safely ignored.
@@ -304,55 +318,105 @@ class MyWindow(arcade.Window):
         layer: The layer being applied.
         px: x position of the brush.
         py: y position of the brush.
+
+        Time complexity: 
+            Best case: O(brush_size^2), depends on the size of the brush
+            Worse case: O(brush_size^2), depends on the size of the brush
         """
-        brushSize = self.grid.brush_size
-        paintAction = PaintAction()
-        for row in range(max(0, px - brushSize), min(self.grid.x, px + brushSize + 1)):
-            for column in range(max(0, py - brushSize), min(self.grid.y, py + brushSize + 1)):
-                if abs(row - px) + abs(column - py) <= brushSize:
+        brush_size = self.grid.brush_size
+        
+        paint_action = PaintAction()
+
+        # Iterate over the rows and columns within the vicinity of the clicked square
+        for row in range(max(0, px - brush_size), min(self.grid.x, px + brush_size + 1)):
+            for column in range(max(0, py - brush_size), min(self.grid.y, py + brush_size + 1)):
+                
+                # Check if the current grid square is within the brush size range
+                is_within_brush_size_range = abs(row - px) + abs(column - py) <= brush_size
+
+                if is_within_brush_size_range:
                     self.grid[row][column].add(layer)
                     paint_step = PaintStep((row, column), layer)
-                    paintAction.add_step(paint_step)
-        self.undo_tracker.add_action(paintAction)
-        self.replay_tracker.add_action(paintAction)
+                    paint_action.add_step(paint_step)
+                    
+        self.undo_tracker.add_action(paint_action)
+        self.replay_tracker.add_action(paint_action)
 
-    def on_undo(self):
-        """Called when an undo is requested."""
+    def on_undo(self) -> None:
+        """
+        Called when an undo is requested.
+
+        Time complexity:
+            Best case: O(1) 
+            Worse case: O(n) where n is the number of steps in the PaintAction.steps list
+        """
         undoAction = self.undo_tracker.undo(self.grid)
         self.replay_tracker.add_action(undoAction, is_undo=True)
 
 
-    def on_redo(self):
-        """Called when a redo is requested."""
+    def on_redo(self) -> None:
+        """
+        Called when a redo is requested.
+        
+        Time complexity:
+            Best case: O(1) 
+            Worse case: O(n) where n is the number of steps in the PaintAction.steps list
+        """
         redoAction = self.undo_tracker.redo(self.grid)
         self.replay_tracker.add_action(redoAction)
 
 
-    def on_special(self):
-        """Called when the special action is requested."""
+    def on_special(self) -> None:
+        """
+        Called when the special action is requested.
+        
+        Time complexity:
+            Best case: O(x * y), depends on the grid size
+            Worse case: O(x * y), depends on the grid size
+        
+        """
         self.grid.special()
         special_action = PaintAction(is_special=True)
         self.undo_tracker.add_action(special_action)
         self.replay_tracker.add_action(special_action)
 
 
-    def on_replay_start(self):
-        """Called when the replay starting is requested."""
+    def on_replay_start(self) -> None:
+        """
+        Called when the replay starting is requested.
+        
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
+        """
+        
         self.replay_tracker.start_replay()
 
     def on_replay_next_step(self) -> bool:
         """
         Called when the next step of the replay is requested.
         Returns whether the replay is finished.
+
+        Time complexity:
+            Best case: O(1) 
+            Worse case: O(n) where n is the number of steps in the PaintAction.steps list
         """
         return self.replay_tracker.play_next_action(self.grid)
 
-    def on_increase_brush_size(self):
-        """Called when an increase to the brush size is requested."""
+    def on_increase_brush_size(self) -> None:
+        """Called when an increase to the brush size is requested.
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
+        """
         self.grid.increase_brush_size()
 
-    def on_decrease_brush_size(self):
-        """Called when a decrease to the brush size is requested."""
+    def on_decrease_brush_size(self) -> None:
+        """Called when a decrease to the brush size is requested.
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
+        """
         self.grid.decrease_brush_size()
 
 def main():

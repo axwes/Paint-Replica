@@ -52,7 +52,11 @@ class SetLayerStore(LayerStore):
 
     def __init__(self) -> None:
         '''
-        Time complexity: O(1)
+        Initializes the SetLayerStore object.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         '''
         self.layer = None  # Initialize layer variable with None
         self.invert = False # Initialize invert variable with False
@@ -62,7 +66,15 @@ class SetLayerStore(LayerStore):
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
-        Time complexity: O(1)
+        Args:
+            layer (Layer): Layer object to be added to self.layer
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         if layer != self.layer:
             self.layer = layer # Set the layer 
@@ -73,7 +85,19 @@ class SetLayerStore(LayerStore):
     def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
-        Time complexity: O(1)
+
+        Args:
+            start (tuple[int,int,int]): The starting color tuple (R, G, B).
+            timestamp (float): The current timestamp.
+            x (int): The x coordinate of the square.
+            y (int): The y coordinate of the square.
+
+        Returns:
+            tuple[int, int, int]: The color tuple (R, G, B) after applying the layer(s).
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
 
         #check if there's layer, if no layer then just return the start color 
@@ -96,7 +120,16 @@ class SetLayerStore(LayerStore):
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
-        Time complexity: O(1)
+
+        Args:
+            layer (Layer): Layer object to be erased from self.layer
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         if self.layer != None:
             self.layer = None # Set the layer to None
@@ -107,7 +140,11 @@ class SetLayerStore(LayerStore):
     def special(self)-> None:
         """
         Special mode. Different for each store implementation.
-        Time complexity: O(1)
+        Inverts the color output for SetLayerStore.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         self.invert = not self.invert
         
@@ -123,7 +160,11 @@ class AdditiveLayerStore(LayerStore):
     """
     def __init__(self):
         """
-        Time complexity: O(1) [because the circular queue is initalised with 20 so its no longer O(n)]
+        Initializes the AdditiveLayerStore object.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1) 
         """
         self.layers = CircularQueue(20)
         self.layers2 = CircularQueue(20)
@@ -133,7 +174,16 @@ class AdditiveLayerStore(LayerStore):
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
-        Time complexity: O(1)
+
+        Args:
+            layer (Layer): Layer object to be added to self.layers
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1) 
         """
         if self.layers.is_full():
             return False
@@ -144,7 +194,20 @@ class AdditiveLayerStore(LayerStore):
     def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
-        Time complexity: O(n) where n is the number of layers in the store 
+
+        Args:
+            start (tuple[int,int,int]): The starting color tuple (R, G, B).
+            timestamp (float): The current timestamp.
+            x (int): The x coordinate of the square.
+            y (int): The y coordinate of the square.
+
+        Returns:
+            tuple[int, int, int]: The color tuple (R, G, B) after applying the layer(s).
+
+        Time complexity: 
+            Best case: O(n) where n is the number of layers in the store 
+            Worse case: O(n) where n is the number of layers in the store 
+
         """
         if self.layers.is_empty():
             return start
@@ -163,10 +226,19 @@ class AdditiveLayerStore(LayerStore):
 
     def erase(self, layer: Layer) -> bool:
         """
-        Complete the erase action with this layer
+        Complete the erase action with this layer.
         Returns true if the LayerStore was actually changed.
-        Erasing from an Additive Layer always removes the oldest remaining layer
-        Time complexity: O(1)
+        Erasing from an Additive Layer always removes the oldest remaining layer.
+
+        Args:
+            layer (Layer): Layer object to be erased from self.layers
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1) 
         """
 
         if not self.layers.is_empty():
@@ -179,7 +251,10 @@ class AdditiveLayerStore(LayerStore):
         """
         Special mode. Different for each store implementation.
         Reverses the "ages" of each layer, so the oldest layer is now the youngest layer, and so on.
-        Time complexity: O(n) where n is the number of layers in the store
+
+        Time complexity: 
+            Best case: O(n) where n is the number of layers in the store 
+            Worse case: O(n) where n is the number of layers in the store 
         """
         stack = ArrayStack(len(self.layers))
         reversed_queue = CircularQueue(len(self.layers))
@@ -206,7 +281,10 @@ class SequenceLayerStore(LayerStore):
     def __init__(self) -> None:
         '''
         Initializes the SequenceLayerStore with a BSet object and an ArraySortedList object.
-        Time complexity: O(1)
+        
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1) 
         '''
         self.layers = BSet(1)
         self.registered_layers = get_layers()
@@ -215,6 +293,13 @@ class SequenceLayerStore(LayerStore):
         """
         Add a layer to the store.
         Returns true if the LayerStore was actually changed.
+
+        Args:
+            layer (Layer): Layer object to be added to self.layers
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
         Time complexity:
             - Best-case: O(1), if the layer is already in the store.
             - Worst-case: O(n), if the layer is not in the store and need to be added in.
@@ -227,7 +312,19 @@ class SequenceLayerStore(LayerStore):
     def get_color(self, start: tuple[int,int,int], timestamp: float, x: int, y: int) -> tuple[int, int, int]:
         """
         Returns the colour this square should show, given the current layers.
-        Time complexity: O(n), where n is the number of layers in the store.
+
+         Args:
+            start (tuple[int,int,int]): The starting color tuple (R, G, B).
+            timestamp (float): The current timestamp.
+            x (int): The x coordinate of the square.
+            y (int): The y coordinate of the square.
+
+        Returns:
+            tuple[int, int, int]: The color tuple (R, G, B) after applying the layer(s).
+
+        Time complexity: 
+            Best case: O(n) where n is the number of layers in the store 
+            Worse case: O(n) where n is the number of layers in the store 
         """
 
         if self.layers.is_empty():
@@ -246,6 +343,13 @@ class SequenceLayerStore(LayerStore):
         """
         Complete the erase action with this layer
         Returns true if the LayerStore was actually changed.
+
+         Args:
+            layer (Layer): Layer object to be erased from self.layers
+
+        Returns:
+            bool: True if the LayerStore was actually changed, False otherwise.
+
          Time complexity:
             - Best-case: O(1), if the layer is not in the store.
             - Worst-case: O(n), if the layer is in the store and needs to be removed.
@@ -262,7 +366,10 @@ class SequenceLayerStore(LayerStore):
         Special mode. Different for each store implementation.
         Removes the median layer from the store based on alphabetical order.
         If there are two median layers, remove the lexicographically smaller one.
-        Time complexity: O(n), where n is the number of layers in the store.
+
+        Time complexity: 
+            Best case: O(n) where n is the number of layers in the store 
+            Worse case: O(n) where n is the number of layers in the store 
         """
 
         array_list = ArraySortedList(len(self.registered_layers))
@@ -286,7 +393,16 @@ class SequenceLayerStore(LayerStore):
         Finds the middle element of an array.
         If the array has an odd number of elements, returns the middle element.
         If the array has an even number of elements, returns the element to the left of the middle.
-        Time complexity: O(1)
+        
+        Args:
+            array (ArraySortedList[ListItem]): A sorted list with ListItem
+
+        Returns:
+            ListItem: The middle element of the given sorted list.
+
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1) 
         """
         length = len(array)
         if length % 2 == 1:

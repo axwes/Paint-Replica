@@ -14,8 +14,13 @@ class UndoTracker:
 
         If your collection is already full,
         feel free to exit early and not add the action.
+
+        Args:
+            action (PaintAction): The paint action to be stored in self.undo_array
         
-        Time complexity: O(1)
+        Time complexity: 
+            Best case: O(1)
+            Worse case: O(1)
         """
         self.undo_array.push(action)
 
@@ -23,6 +28,9 @@ class UndoTracker:
         """
         Undo an operation, and apply the relevant action to the grid.
         If there are no actions to undo, simply do nothing.
+
+         Args:
+            grid (Grid): The grid to which the undone action is applied.
 
         :return: The action that was undone, or None.
 
@@ -42,6 +50,9 @@ class UndoTracker:
         """
         Redo an operation that was previously undone.
         If there are no actions to redo, simply do nothing.
+
+        Args:
+            grid (Grid): The grid to which the redone action is applied.
 
         :return: The action that was redone, or None.
 
