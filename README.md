@@ -1,15 +1,12 @@
-# Fundamentals of Algorithms - Assignment 1 S1 2023
+# Paint Replica 2023
 
 ## Attribution
-
-* Assignment Designed and Programmed by Jackson Goerner.
-* Multiple points of valuable feedback and checking provided by Lifi Huang.
 * Game Idea originated from [Chicory: A Colorful Tale](https://chicorygame.com/).
 
-## Group Members
+## Members
 
-- Tan Yin Cheng (ytan0255@student.monash.edu)
-- 
+- Tan Yin Cheng 
+
 ## Setup
 
 Note: For all of these you may need to replace `python` with `py` or `python3` depending on your operating system and python version.
