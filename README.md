@@ -1,6 +1,9 @@
 # Paint Replica 2023
 
 ## Attribution
+* Designed by Jackson Goerner.
+* Programmed by Tan Yin Cheng for FIT 1008.
+* Multiple points of valuable feedback and checking provided by Lifi Huang.
 * Game Idea originated from [Chicory: A Colorful Tale](https://chicorygame.com/).
 
 ## Members
